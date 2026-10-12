@@ -3,33 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-const kThemeModeKey = '__theme_mode__';
-
-SharedPreferences? _prefs;
-
 abstract class FlutterFlowTheme {
-  static Future initialize() async =>
-      _prefs = await SharedPreferences.getInstance();
-
-  static ThemeMode get themeMode {
-    final darkMode = _prefs?.getBool(kThemeModeKey);
-    return darkMode == null
-        ? ThemeMode.system
-        : darkMode
-            ? ThemeMode.dark
-            : ThemeMode.light;
-  }
-
-  static void saveThemeMode(ThemeMode mode) => mode == ThemeMode.system
-      ? _prefs?.remove(kThemeModeKey)
-      : _prefs?.setBool(kThemeModeKey, mode == ThemeMode.dark);
-
   static FlutterFlowTheme of(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? DarkModeTheme()
-        : LightModeTheme();
+    return LightModeTheme();
   }
 
   @Deprecated('Use primary instead')
@@ -61,6 +37,8 @@ abstract class FlutterFlowTheme {
   late Color blue;
   late Color green;
   late Color background;
+
+  FFDesignTokens get designToken => FFDesignTokens(this);
 
   @Deprecated('Use displaySmallFamily instead')
   String get title1Family => displaySmallFamily;
@@ -150,11 +128,11 @@ class LightModeTheme extends FlutterFlowTheme {
 
   late Color primary = const Color(0xFF89DC8C);
   late Color secondary = const Color(0xFF5794F2);
-  late Color tertiary = const Color(0xFF89DC8C);
-  late Color alternate = const Color(0xFF242424);
+  late Color tertiary = const Color(0xFFEE8B60);
+  late Color alternate = const Color(0xFFE0E3E7);
   late Color primaryText = const Color(0xFF14181B);
   late Color secondaryText = const Color(0xFF57636C);
-  late Color primaryBackground = const Color(0xFFF1F4F8);
+  late Color primaryBackground = const Color(0xFFF5F5F5);
   late Color secondaryBackground = const Color(0xFFFFFFFF);
   late Color accent1 = const Color(0x4C4B39EF);
   late Color accent2 = const Color(0x4D39D2C0);
@@ -231,7 +209,6 @@ class ThemeTypography extends Typography {
         color: theme.primaryText,
         fontWeight: FontWeight.w600,
         fontSize: 64.0,
-        fontStyle: FontStyle.normal,
       );
   String get displayMediumFamily => 'Inter';
   bool get displayMediumIsCustom => false;
@@ -251,15 +228,17 @@ class ThemeTypography extends Typography {
   bool get headlineLargeIsCustom => false;
   TextStyle get headlineLarge => GoogleFonts.inter(
         color: theme.primaryText,
-        fontWeight: FontWeight.w600,
-        fontSize: 32.0,
+        fontWeight: FontWeight.bold,
+        fontSize: 24.0,
+        fontStyle: FontStyle.normal,
       );
   String get headlineMediumFamily => 'Inter';
   bool get headlineMediumIsCustom => false;
   TextStyle get headlineMedium => GoogleFonts.inter(
         color: theme.primaryText,
-        fontWeight: FontWeight.w600,
-        fontSize: 28.0,
+        fontWeight: FontWeight.bold,
+        fontSize: 18.0,
+        fontStyle: FontStyle.normal,
       );
   String get headlineSmallFamily => 'Inter';
   bool get headlineSmallIsCustom => false;
@@ -292,77 +271,101 @@ class ThemeTypography extends Typography {
   String get labelLargeFamily => 'Inter';
   bool get labelLargeIsCustom => false;
   TextStyle get labelLarge => GoogleFonts.inter(
-        color: theme.secondaryText,
+        color: Color(0x4F14181B),
         fontWeight: FontWeight.normal,
-        fontSize: 16.0,
+        fontSize: 18.0,
+        fontStyle: FontStyle.normal,
       );
   String get labelMediumFamily => 'Inter';
   bool get labelMediumIsCustom => false;
   TextStyle get labelMedium => GoogleFonts.inter(
-        color: theme.secondaryText,
-        fontWeight: FontWeight.normal,
-        fontSize: 14.0,
+        color: Color(0x4C14181B),
+        fontWeight: FontWeight.w500,
+        fontSize: 20.0,
+        fontStyle: FontStyle.normal,
       );
   String get labelSmallFamily => 'Inter';
   bool get labelSmallIsCustom => false;
   TextStyle get labelSmall => GoogleFonts.inter(
-        color: theme.secondaryText,
-        fontWeight: FontWeight.normal,
-        fontSize: 12.0,
+        color: theme.primaryText,
+        fontWeight: FontWeight.bold,
+        fontSize: 14.0,
+        fontStyle: FontStyle.normal,
       );
   String get bodyLargeFamily => 'Inter';
   bool get bodyLargeIsCustom => false;
   TextStyle get bodyLarge => GoogleFonts.inter(
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
-        fontSize: 16.0,
+        fontSize: 24.0,
+        fontStyle: FontStyle.normal,
       );
   String get bodyMediumFamily => 'Inter';
   bool get bodyMediumIsCustom => false;
   TextStyle get bodyMedium => GoogleFonts.inter(
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
-        fontSize: 14.0,
+        fontSize: 18.0,
+        fontStyle: FontStyle.normal,
       );
   String get bodySmallFamily => 'Inter';
   bool get bodySmallIsCustom => false;
   TextStyle get bodySmall => GoogleFonts.inter(
         color: theme.primaryText,
         fontWeight: FontWeight.normal,
-        fontSize: 12.0,
+        fontSize: 15.0,
+        fontStyle: FontStyle.normal,
       );
 }
 
-class DarkModeTheme extends FlutterFlowTheme {
-  @Deprecated('Use primary instead')
-  Color get primaryColor => primary;
-  @Deprecated('Use secondary instead')
-  Color get secondaryColor => secondary;
-  @Deprecated('Use tertiary instead')
-  Color get tertiaryColor => tertiary;
+class FFDesignTokens {
+  const FFDesignTokens(this.theme);
+  final FlutterFlowTheme theme;
+  FFSpacing get spacing => const FFSpacing();
+  FFRadius get radius => const FFRadius();
+  FFShadows get shadow => FFShadows(theme);
+}
 
-  late Color primary = const Color(0xFF5794F2);
-  late Color secondary = const Color(0xFF39D2C0);
-  late Color tertiary = const Color(0xFFEE8B60);
-  late Color alternate = const Color(0xFFF5F5F5);
-  late Color primaryText = const Color(0xFFFFFFFF);
-  late Color secondaryText = const Color(0xFF95A1AC);
-  late Color primaryBackground = const Color(0xFF1D2428);
-  late Color secondaryBackground = const Color(0xFF14181B);
-  late Color accent1 = const Color(0x4C4B39EF);
-  late Color accent2 = const Color(0x4D39D2C0);
-  late Color accent3 = const Color(0x4DEE8B60);
-  late Color accent4 = const Color(0xB2262D34);
-  late Color success = const Color(0xFF249689);
-  late Color warning = const Color(0xFFF9CF58);
-  late Color error = const Color(0xFFFF5963);
-  late Color info = const Color(0xFFFFFFFF);
+class FFSpacing {
+  const FFSpacing();
+  double get xs => 4.0;
+  double get sm => 8.0;
+  double get md => 16.0;
+  double get lg => 24.0;
+  double get xl => 32.0;
+}
 
-  late Color customColor1 = const Color(0xFF242424);
-  late Color customColor2 = const Color(0xFF89DC8C);
-  late Color blue = const Color(0xFF5794F2);
-  late Color green = const Color(0xFF89DC8C);
-  late Color background = const Color(0xFFF5F5F5);
+class FFRadius {
+  const FFRadius();
+  double get sm => 8.0;
+  double get md => 16.0;
+  double get lg => 24.0;
+  double get full => 9999.0;
+}
+
+class FFShadows {
+  const FFShadows(this.theme);
+  final FlutterFlowTheme theme;
+  BoxShadow get sm => const BoxShadow(
+      blurRadius: 3.0,
+      color: const Color(0x1A000000),
+      offset: const Offset(0.0, 1.0),
+      spreadRadius: 0.0);
+  BoxShadow get md => const BoxShadow(
+      blurRadius: 6.0,
+      color: const Color(0x1A000000),
+      offset: const Offset(0.0, 3.0),
+      spreadRadius: 0.0);
+  BoxShadow get lg => const BoxShadow(
+      blurRadius: 15.0,
+      color: const Color(0x1A000000),
+      offset: const Offset(0.0, 8.0),
+      spreadRadius: 0.0);
+  BoxShadow get xl => const BoxShadow(
+      blurRadius: 25.0,
+      color: const Color(0x1A000000),
+      offset: const Offset(0.0, 16.0),
+      spreadRadius: 0.0);
 }
 
 extension TextStyleHelper on TextStyle {
@@ -380,7 +383,7 @@ extension TextStyleHelper on TextStyle {
     List<Shadow>? shadows,
     String? package,
   }) {
-    if (useGoogleFonts && fontFamily != null) {
+    if (useGoogleFonts && fontFamily != null && fontFamily.isNotEmpty) {
       font = GoogleFonts.getFont(fontFamily,
           fontWeight: fontWeight ?? this.fontWeight,
           fontStyle: fontStyle ?? this.fontStyle);
